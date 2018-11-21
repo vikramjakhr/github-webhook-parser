@@ -46,7 +46,7 @@ Examples:
 
   # sample usage
   githubwebhookparser --port 6686 --secret MyGitHubSuperSecretSecrect --endpoint /github-webhook/
-  --jenkinsUrl http://jenkins.icmarkets.com/ --jenkinsUsername admin --jenkinsApiToken 11ed0505476f3313215e0b3b12bf179e9e
+  --jenkinsUrl http://jenkins.example.com/ --jenkinsUsername admin --jenkinsApiToken mytoken
   --jenkinsJobToTrigger webhook-test
 `
 
