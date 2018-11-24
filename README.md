@@ -1,4 +1,5 @@
 # github-webhook-parser
+[![GoDoc](https://godoc.org/github.com/vikramjakhr/github-webhook-parser?status.svg)](https://godoc.org/github.com/vikramjakhr/github-webhook-parser)
 
 #### (Github Event --> github-webhook-parser --> Jenkins)
 Github webhook parser cli listens to Github events and allows easy receiving and parsing of GitHub events, It can also 
