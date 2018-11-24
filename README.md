@@ -14,12 +14,13 @@ Features:
 # Installation
 ##### Step 1: Download the [latest release tar](https://github.com/vikramjakhr/github-webhook-parser/releases/latest). Example command below.
 ```
-wget https://github.com/vikramjakhr/github-webhook-parser/releases/download/v1.0.0/github-webhook-parser.tar.gz
+wget https://github.com/vikramjakhr/github-webhook-parser/releases/download/v1.0.0/githubwebhookparser
 ```
 
-##### Step 2: Extract the tar file in /usr/bin
+##### Step 2: Make the binary executable and Move it to /usr/bin
 ```
-tar -zxvf github-webhook-parser.tar.gz -C /usr/bin
+chmod +x githubwebhookparser
+mv githubwebhookparser /usr/bin
 ```
 
 ##### Step 3: Start the server using cli
