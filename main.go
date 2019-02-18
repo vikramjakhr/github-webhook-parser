@@ -103,50 +103,50 @@ func main() {
 
 	// Webhook handler
 	http.HandleFunc(*endpoint, func(w http.ResponseWriter, r *http.Request) {
-		event, err := hook.Parse(r, github.CreateEvent, github.DeleteEvent, github.PushEvent)
+		payload, err := hook.Parse(r, github.CreateEvent, github.DeleteEvent, github.PushEvent)
 		if err != nil {
 			if err == github.ErrEventNotFound {
-				fmt.Println("E! Specified event not found")
+				fmt.Println("E! Specified payload not found")
 				fmt.Println(err)
 			}
 		}
 
-		switch event.(type) {
+		switch payload.(type) {
 
 		case github.CreatePayload:
 			if *jenkinsJobToTrigger != "" {
-				payload := event.(github.CreatePayload)
+				payload := payload.(github.CreatePayload)
 				job := gojenkins.Job{
 					Name:    *jenkinsJobToTrigger,
 					Actions: actions,
 				}
-				checkError(jenkins().Build(job, withParams(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login)))
+				checkError(jenkins().Build(job, withParams(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login, "CREATE")))
 			}
 
 		case github.DeletePayload:
 			if *jenkinsJobToTrigger != "" {
-				payload := event.(github.DeletePayload)
+				payload := payload.(github.DeletePayload)
 				job := gojenkins.Job{
 					Name:    *jenkinsJobToTrigger,
 					Actions: actions,
 				}
-				checkError(jenkins().Build(job, withParams(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login)))
+				checkError(jenkins().Build(job, withParams(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login, "DELETE")))
 			}
 
 		case github.PushPayload:
 			if *jenkinsJobToTrigger != "" {
-				payload := event.(github.PushPayload)
+				payload := payload.(github.PushPayload)
 				job := gojenkins.Job{
 					Name:    *jenkinsJobToTrigger,
 					Actions: actions,
 				}
-				checkError(jenkins().Build(job, withParams(payload.Ref, "", payload.Repository.Name, payload.Sender.Login)))
+				checkError(jenkins().Build(job, withParams(payload.Ref, "", payload.Repository.Name, payload.Sender.Login, "PUSH")))
 			}
 
 		}
 	})
 	fmt.Printf("I! Starting the server on port %s\n", *port)
-	http.ListenAndServe(":"+*port, nil)
+	http.ListenAndServe(":" + *port, nil)
 }
 
 func jenkins() *gojenkins.Jenkins {
@@ -158,12 +158,13 @@ func jenkins() *gojenkins.Jenkins {
 	return gojenkins.NewJenkins(auth, *jenkinsUrl)
 }
 
-func withParams(ref, refType, repository, sender string) url.Values {
+func withParams(ref, refType, repository, sender, event string) url.Values {
 	params := url.Values{}
 	params.Set("REF", ref)
 	params.Set("REF_TYPE", refType)
 	params.Set("REPOSITORY", repository)
 	params.Set("SENDER", sender)
+	params.Set("GITHUB_EVENT", event)
 	return params
 }
 
