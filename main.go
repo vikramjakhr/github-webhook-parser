@@ -120,6 +120,7 @@ func main() {
 					Name:    *jenkinsJobToTrigger,
 					Actions: actions,
 				}
+				logPayload(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login, "CREATE")
 				checkError(jenkins().Build(job, withParams(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login, "CREATE")))
 			}
 
@@ -130,6 +131,7 @@ func main() {
 					Name:    *jenkinsJobToTrigger,
 					Actions: actions,
 				}
+				logPayload(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login, "DELETE")
 				checkError(jenkins().Build(job, withParams(payload.Ref, payload.RefType, payload.Repository.Name, payload.Sender.Login, "DELETE")))
 			}
 
@@ -140,13 +142,14 @@ func main() {
 					Name:    *jenkinsJobToTrigger,
 					Actions: actions,
 				}
+				logPayload(payload.Ref, "-", payload.Repository.Name, payload.Sender.Login, "PUSH")
 				checkError(jenkins().Build(job, withParams(payload.Ref, "", payload.Repository.Name, payload.Sender.Login, "PUSH")))
 			}
 
 		}
 	})
 	fmt.Printf("I! Starting the server on port %s\n", *port)
-	http.ListenAndServe(":" + *port, nil)
+	http.ListenAndServe(":"+*port, nil)
 }
 
 func jenkins() *gojenkins.Jenkins {
@@ -175,4 +178,9 @@ func checkError(err error) {
 	} else {
 		fmt.Printf("I! Successfully executed job %s\n", *jenkinsJobToTrigger)
 	}
+}
+
+func logPayload(ref, refType, repository, sender, event string) {
+	fmt.Printf("REF: %s, REF_TYPE: %s, REPOSITORY: %s, SENDER: %s, GITHUB_EVENT: %s\n",
+		ref, refType, repository, sender, event)
 }
